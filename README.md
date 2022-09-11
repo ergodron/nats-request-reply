@@ -21,10 +21,8 @@
 Склонируйте репозиторий и перейдите в него
 
 ```
-
 git clone https://github.com/ergodron/nats-request-reply.git
 cd nats-request-reply
-
 ```
 
 ### Запуск и остановка контейнера
