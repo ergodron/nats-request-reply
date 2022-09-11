@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  nats:
+    image: 'nats:2.8.4-alpine'
+    container_name: nats
+    restart: always
+    expose:
+      - "4222"
+    ports:
+      - "8222:8222"
+    networks:
+      - task2_network
+
+  postgres:
+    image: postgres:14.5-alpine
+    container_name: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - task2_network
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    volumes:
+      - './api/src:/usr/src/app/api/src'
+    container_name: api
+    ports:
+      - 3001:3000
+    env_file:
+      - .env
+    networks:
+      - task2_network
+    depends_on:
+      - nats
+
+  storage:
+    build:
+      context: ./storage
+      dockerfile: Dockerfile
+    volumes:
+      - './storage/src:/usr/src/app/storage/src'
+    container_name: storage
+    ports:
+      - 3002:3000
+    env_file:
+      - .env
+    networks:
+      - task2_network
+    depends_on:
+      - nats
+      - postgres
+
+networks:
+  task2_network:
+    name: task2_network
+    driver: bridge
